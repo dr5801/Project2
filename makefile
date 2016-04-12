@@ -9,10 +9,11 @@
 ################################################################
 CC = gcc
 CFLAGS = -g 
+DEPS = EDF_Scheduler.h
 OBJ = EDF_Scheduler.o 
 LIBS ?= -lpthread -lrt
 
-%.o: %.c 
+%.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 scheduler: $(OBJ)
