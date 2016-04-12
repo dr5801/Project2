@@ -10,7 +10,7 @@
 CC = gcc
 CFLAGS = -g 
 DEPS = EDF_Scheduler.h
-OBJ = EDF_Scheduler.o 
+OBJ = EDF_Scheduler.o User_Input.o
 LIBS ?= -lpthread -lrt
 
 %.o: %.c $(DEPS)
