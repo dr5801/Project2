@@ -1,22 +1,22 @@
-#############################################################
+################################################################
 ##
-##  Lab 5      : Thread Scheduling
-##	Programmer : Drew Rife
-##	Course 	   : CMPE 320
-##  Section    : 2 (11-12:50pm)
-##	Instructor : S. Lee
+## Project 2   : CPU Scheduling
+## Programmers : Drew Rife & Alec Waddelow
+## Course      : CMPE 320
+## Section     : 2 (11-12:50pm)
+## Instructor  : S. Lee
 ##
-#############################################################
+################################################################
 CC = gcc
-CFLAGS = -g
-OBJ = ThreadScheduler.o
+CFLAGS = -g 
+OBJ = EDF_Scheduler.o 
 LIBS ?= -lpthread -lrt
 
-%.o: %.c
+%.o: %.c 
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-scheduling: $(OBJ)
+scheduler: $(OBJ)
 	gcc $(CFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	$(RM) $(OBJ) scheduling
+	$(RM) $(OBJ) scheduler
