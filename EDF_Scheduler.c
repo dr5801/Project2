@@ -23,7 +23,8 @@
 /* Contains all the info related to each thread */
 typedef struct THREAD_INFO {
 	int thread_ID;
-	int burst_time;
+	int execution_time;
+	int period_for_thread;
 	bool is_done;
 }THREAD;
 
