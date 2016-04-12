@@ -75,6 +75,11 @@ bool Check_Num_Threads(int num_of_threads) {
 	}
 }
 
+/**
+ * Requests the execution time for each thread from the user.
+ * Requests the period time for each thread from the user.
+ * Requests how long (sec) the user would like it to run.
+ */
 void Request_Execution_And_Period_Times() {
 	list_of_threads = malloc(sizeof(THREAD *) * num_of_threads);
 	int i = 0;
