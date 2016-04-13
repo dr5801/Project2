@@ -25,18 +25,19 @@ bool Check_Num_Threads(int num_of_threads) {
  * Requests how long (sec) the user would like it to run.
  */
 void Request_Execution_And_Period_Times() {
-	list_of_threads = malloc(sizeof(THREAD *) * num_of_threads);
+	list_of_threads = malloc(sizeof(THREAD_INFO *) * num_of_threads);
 	int i = 0;
 	int largest_period_time = 0;
+	int this_execution_time = 0;
+	int this_period = 0;
 
 	/* gets the execution time from the user */
 	while(i < num_of_threads) {
-		int this_execution_time = 0;
 		printf("\nExecution time for Thread %02d : ", i);
 		scanf("%d", &this_execution_time);
 		
 		if(this_execution_time >= 1) {
-			list_of_threads[i] = malloc(sizeof(THREAD));
+			list_of_threads[i] = malloc(sizeof(THREAD_INFO));
 			list_of_threads[i]->execution_time = this_execution_time;
 			list_of_threads[i]->thread_ID = i;
 			list_of_threads[i]->is_done = false;
@@ -49,7 +50,7 @@ void Request_Execution_And_Period_Times() {
 	i = 0;
 	/* gets the period times for the threads */
 	while(i < num_of_threads) {
-		unsigned int this_period = 0;
+		this_period = 0;
 		printf("Period for Thread %02d : ", i);
 		scanf("%d", &this_period);
 
@@ -74,9 +75,34 @@ void Request_Execution_And_Period_Times() {
 		printf("How long do you want to execute this program (sec) : ");
 		scanf("%d", &sec_to_run);
 
-		if(sec_to_run >= largest_period_time)
+		if(sec_to_run >= largest_period_time) {
 			acceptable_time = true;
+		}
 		else
 			printf("\nError: Your time needs to be at least the largest period time (%d)!\n", largest_period_time);
+	}
+
+	int k = 0;
+	while(k < num_of_threads) {
+		list_of_threads[k]->deadline_list[(sec_to_run/list_of_threads[k]->period_for_thread) + 1];
+		printf("\nCurrent Thread Running -> %d\n", k);
+		int j = 0;
+		int sum = 0;
+		int inidvidual_period = list_of_threads[k]->period_for_thread;
+		while(j < ((sec_to_run/list_of_threads[k]->period_for_thread) + 1)) {
+			// printf("PERIOD FOR THREAD-----> : %d\n", list_of_threads[k]->period_for_thread);
+			if(j == 0) {
+				sum = list_of_threads[k]->period_for_thread;
+			}
+			else {
+				sum += inidvidual_period;
+				printf("\n%d\n", sum);
+			}
+
+			list_of_threads[k]->deadline_list[j] = sum;
+			j++;
+		}
+
+		k++;
 	}
 }

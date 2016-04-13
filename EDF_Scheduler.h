@@ -23,15 +23,22 @@
 #define MAX_NUM_THREADS 10
 #endif // MAX_NUM_THREADS
 
+
+#ifndef MAX_PROG_LENGTH_SECONDS
+#define MAX_PROG_LENGTH_SECONDS 1000
+#endif 
+
+
 /* Contains all the info related to each thread */
 typedef struct THREAD_INFO {
 	int thread_ID;
 	int execution_time;
 	int period_for_thread;
 	bool is_done;
-}THREAD;
+	int deadline_list[];
+}THREAD_INFO;
 
-THREAD **list_of_threads;
+THREAD_INFO **list_of_threads;
 pthread_t this_thread[MAX_NUM_THREADS];
 
 int num_of_threads;

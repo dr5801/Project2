@@ -17,6 +17,7 @@ int main(int argc, char * argv[]) {
 		if(valid) {
 			num_of_threads = atoi(argv[1]);
 			Request_Execution_And_Period_Times();
+
 		}
 		
 	}
