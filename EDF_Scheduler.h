@@ -39,13 +39,29 @@ typedef struct THREAD_INFO {
 }THREAD_INFO;
 
 THREAD_INFO * list_of_threads;
-pthread_t this_thread[MAX_NUM_THREADS];
 
-int num_of_threads;
-int sec_to_run;
 
+/* functions in User_Input file */
 bool Check_Num_Threads(int num_of_threads);
 void Request_Execution_And_Period_Times();
 void free_list();
+
+void * timer();
+void controller();
+void * scheduler();
+void * thread_execution();
+
+int num_of_threads;
+int sec_to_run;
+int time_elapsed;
+
+bool change_thread;
+bool program_finished;
+
+pthread_t this_thread[MAX_NUM_THREADS];
+pthread_t timer_thread;
+pthread_t scheduler_thread;
+
+pthread_mutex_t mutex;
 
 #endif // EDF_SCHEDULER_H
