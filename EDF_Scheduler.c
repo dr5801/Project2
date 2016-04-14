@@ -20,8 +20,8 @@ int main(int argc, char * argv[]) {
 
 		}
 
-	/* TODO: I need to make sure the free_list function is properly freeing everything (no memory leaks)*/
-	free_list();		
+		
+		free_list();  // deconstruct the list
 	}
 	else if(argc < 2){
 		printf("Error: You didn't enter how many threads you wanted. TERMINATING...\n");
