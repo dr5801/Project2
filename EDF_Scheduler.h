@@ -35,10 +35,10 @@ typedef struct THREAD_INFO {
 	int execution_time;
 	int period_for_thread;
 	bool is_done;
-	int deadline_list[];
+	int * deadline_list;
 }THREAD_INFO;
 
-THREAD_INFO **list_of_threads;
+THREAD_INFO * list_of_threads;
 pthread_t this_thread[MAX_NUM_THREADS];
 
 int num_of_threads;
@@ -46,5 +46,6 @@ int sec_to_run;
 
 bool Check_Num_Threads(int num_of_threads);
 void Request_Execution_And_Period_Times();
+void free_list();
 
 #endif // EDF_SCHEDULER_H

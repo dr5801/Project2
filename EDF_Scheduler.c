@@ -19,7 +19,9 @@ int main(int argc, char * argv[]) {
 			Request_Execution_And_Period_Times();
 
 		}
-		
+
+	/* TODO: Free list when done */
+	free_list();		
 	}
 	else if(argc < 2){
 		printf("Error: You didn't enter how many threads you wanted. TERMINATING...\n");
