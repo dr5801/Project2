@@ -42,13 +42,13 @@ void controller() {
 	pthread_create(&scheduler_thread, &attr, scheduler, NULL);
 
 	
-
 	pthread_join(timer_thread, NULL);
 	pthread_join(scheduler_thread, NULL);
 }
 
 void * timer() {
 	int tmp_max_seconds = sec_to_run;
+	timer_finished = false;
 	time_elapsed = 0;
 	change_thread = false;
 
@@ -62,10 +62,11 @@ void * timer() {
 		printf("%02d\n", time_elapsed);
 		tmp_max_seconds--;
 	}
+	timer_finished = true;
 }
 
 void * scheduler() {
-	while(true) {
+	while(!timer_finished) {
 		if(change_thread) {
 			printf("YOU MADE IT INTO SCHEDULER\n");
 			change_thread = false;

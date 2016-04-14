@@ -50,13 +50,15 @@ void * timer();
 void controller();
 void * scheduler();
 void * thread_execution();
+void * runner();
 
 int num_of_threads;
 int sec_to_run;
 int time_elapsed;
 
-bool change_thread;
-bool program_finished;
+/* make flags volatile so compiler doesn't ignore them */
+volatile bool change_thread;
+volatile bool timer_finished;
 
 pthread_t this_thread[MAX_NUM_THREADS];
 pthread_t timer_thread;
