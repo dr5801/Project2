@@ -20,7 +20,7 @@ int main(int argc, char * argv[]) {
 
 		}
 
-	/* TODO: Free list when done */
+	/* TODO: I need to make sure the free_list function is properly freeing everything (no memory leaks)*/
 	free_list();		
 	}
 	else if(argc < 2){
