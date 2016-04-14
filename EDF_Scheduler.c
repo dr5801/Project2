@@ -67,7 +67,7 @@ void * timer() {
 void * scheduler() {
 	while(true) {
 		if(change_thread) {
-			printf("\nYOU MADE IT INTO SCHEDULER\n");
+			printf("YOU MADE IT INTO SCHEDULER\n");
 			change_thread = false;
 		}
 	}
