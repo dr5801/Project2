@@ -78,10 +78,13 @@ void * timer() {
 			change_thread = true;
 		}
 		sleep(1);
+		pthread_mutex_lock(&mutex_timer);
 		time_elapsed++;
+		pthread_mutex_unlock(&mutex_timer);
 		tmp_max_seconds--;
 	}
 	timer_finished = true;
+	pthread_exit(0);
 }
 
 void * scheduler() {
@@ -91,14 +94,15 @@ void * scheduler() {
 			change_thread = false;
 		}
 	}
+	pthread_exit(0);
 }
 
 void * runner(void *my_thread) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread;
+	static int this_func_local_time = 0;
 
 	while(!timer_finished) {
 		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
-			
 
 			/**
 			 * ALEC: this is how I was able to sync them.
@@ -106,13 +110,18 @@ void * runner(void *my_thread) {
 			 * Don't know if you wanna waste time to try some other method to work
 			 * but at least now we have something that works.
 			 */
-			if(!timer_finished) {
-				sem_wait(&sem_ready);
-				sleep(1);
-				printf("%02d\n", time_elapsed);
-				sem_post(&sem_ready);
+			sem_wait(&sem_ready);
+			if( (this_func_local_time != time_elapsed) ) {
+				this_func_local_time = time_elapsed;
+				pthread_mutex_lock(&mutex_threads);
+				printf("%02d\n", this_func_local_time);
+				pthread_mutex_unlock(&mutex_threads);
+				// sleep(1);
 			}
+			sem_post(&sem_ready);
 
 		}
 	}
+
+	pthread_exit(0);
 }
