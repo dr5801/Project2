@@ -38,13 +38,16 @@ int main(int argc, char * argv[]) {
 	}
 }
 
+/**
+ * Creates all the threads and joins them upon program completion
+ */
 void controller() {
 	int i;
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	thread_being_executed = 0;
 
-
+	/* create all threads */
 	for(i = 0; i < num_of_threads; i++) {
 		
 		if(i == 0) {
@@ -54,9 +57,10 @@ void controller() {
 		}
 		pthread_create(&this_thread[i], &attr, runner, list_of_threads);
 	}
-	thread_is_ready = true;
 
+	thread_is_ready = true; // threads are created, now they are ready
 
+	/* join all threads */
 	for(i = 0; i < num_of_threads; i++) {
 
 		if(i == 0) {
@@ -67,26 +71,31 @@ void controller() {
 	}
 }
 
+/**
+ * Keep track of time
+ */
 void * timer() {
-	int tmp_max_seconds = sec_to_run;
-	timer_finished = false;
 	time_elapsed = 0;
 	change_thread = false;
+	timer_finished = false;
+	int tmp_max_seconds = sec_to_run;
 
 	while(tmp_max_seconds > 0) {
+		sleep(1);
+		time_elapsed++;
 		if(time_elapsed == 5) {
 			change_thread = true;
 		}
-		sleep(1);
-		pthread_mutex_lock(&mutex_timer);
-		time_elapsed++;
-		pthread_mutex_unlock(&mutex_timer);
 		tmp_max_seconds--;
 	}
 	timer_finished = true;
 	pthread_exit(0);
 }
 
+/**
+ * Schedules which thread to run next 
+ * based on earliest deadline
+ */
 void * scheduler() {
 	while(!timer_finished) {
 		if(change_thread) {
@@ -97,31 +106,29 @@ void * scheduler() {
 	pthread_exit(0);
 }
 
-void * runner(void *my_thread) {
-	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread;
+/**
+ * Runs the main threads created : prints time (sec)
+ * @param  my_thread 
+ */
+void * runner(void * my_thead_info) {
+	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thead_info;
 	static int this_func_local_time = 0;
 
 	while(!timer_finished) {
 		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
 
-			/**
-			 * ALEC: this is how I was able to sync them.
-			 * If you move the if statement then the output won't be correct. 
-			 * Don't know if you wanna waste time to try some other method to work
-			 * but at least now we have something that works.
-			 */
+			/* critical section : synchronizes threads with timer */
 			sem_wait(&sem_ready);
-			if( (this_func_local_time != time_elapsed) ) {
+			if(this_func_local_time != time_elapsed) {
+
 				this_func_local_time = time_elapsed;
 				pthread_mutex_lock(&mutex_threads);
 				printf("%02d\n", this_func_local_time);
 				pthread_mutex_unlock(&mutex_threads);
-				// sleep(1);
 			}
 			sem_post(&sem_ready);
 
 		}
 	}
-
 	pthread_exit(0);
 }

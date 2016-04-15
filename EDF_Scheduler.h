@@ -26,7 +26,7 @@
 
 #ifndef MAX_PROG_LENGTH_SECONDS
 #define MAX_PROG_LENGTH_SECONDS 1000
-#endif 
+#endif  // MAX_PROG_LENGTH_SECONDS
 
 
 /* Contains all the info related to each thread */
@@ -46,11 +46,20 @@ bool Check_Num_Threads(int num_of_threads);
 void Request_Execution_And_Period_Times();
 void free_list();
 
-void * timer();
-void controller();
-void * scheduler();
-void * thread_execution();
-void * runner();
+void * timer();			// keeps track of time
+void * scheduler();		// schedules what thread goes next
+void * runner();		// runs the main threads 
+void controller();		// creates the threads
+
+
+pthread_t this_thread[MAX_NUM_THREADS];  // threads that run and print time
+pthread_t timer_thread;					 // thread to keep track of time
+pthread_t scheduler_thread;				 // thread to change which thread runs next
+
+/* semaphore and mutex locks for threads */
+pthread_mutex_t mutex_timer;
+pthread_mutex_t mutex_threads;
+sem_t sem_ready;
 
 int num_of_threads;
 int sec_to_run;
@@ -62,13 +71,5 @@ bool thread_is_ready;
 volatile bool change_thread;
 volatile bool timer_finished;
 volatile static bool print;
-
-pthread_t this_thread[MAX_NUM_THREADS];
-pthread_t timer_thread;
-pthread_t scheduler_thread;
-
-pthread_mutex_t mutex_timer;
-pthread_mutex_t mutex_threads;
-sem_t sem_ready;
 
 #endif // EDF_SCHEDULER_H
