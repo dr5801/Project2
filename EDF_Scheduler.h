@@ -55,15 +55,20 @@ void * runner();
 int num_of_threads;
 int sec_to_run;
 int time_elapsed;
+int thread_being_executed;
+bool thread_is_ready;
 
 /* make flags volatile so compiler doesn't ignore them */
 volatile bool change_thread;
 volatile bool timer_finished;
+volatile static bool print;
 
 pthread_t this_thread[MAX_NUM_THREADS];
 pthread_t timer_thread;
 pthread_t scheduler_thread;
 
-pthread_mutex_t mutex;
+pthread_mutex_t mutex_timer;
+pthread_mutex_t mutex_threads;
+sem_t sem_ready;
 
 #endif // EDF_SCHEDULER_H
