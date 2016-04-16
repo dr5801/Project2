@@ -21,7 +21,7 @@ int main(int argc, char * argv[]) {
 			num_of_threads = atoi(argv[1]);
 			Request_Execution_And_Period_Times();
 			
-			sem_init(&sem_ready, 0, 1);
+			
 			controller();
 
 			
@@ -50,12 +50,12 @@ void controller() {
 	/* create all threads */
 	for(i = 0; i < num_of_threads; i++) {
 		
+		pthread_create(&this_thread[i], &attr, runner, list_of_threads);
 		if(i == 0) {
 			/* create timer and scheduler thread */
 			pthread_create(&timer_thread, &attr, timer, NULL);
 			pthread_create(&scheduler_thread, &attr, scheduler, NULL);
 		}
-		pthread_create(&this_thread[i], &attr, runner, list_of_threads);
 	}
 
 	thread_is_ready = true; // threads are created, now they are ready
@@ -99,7 +99,7 @@ void * timer() {
 void * scheduler() {
 	while(!timer_finished) {
 		if(change_thread) {
-			printf("YOU MADE IT INTO SCHEDULER\n");
+			thread_being_executed++;
 			change_thread = false;
 		}
 	}
@@ -113,22 +113,21 @@ void * scheduler() {
 void * runner(void * my_thead_info) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thead_info;
 	static int this_func_local_time = 0;
-
+	sem_init(&sem_ready, 0, 1);
 	while(!timer_finished) {
 		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
 
-			/* critical section : synchronizes threads with timer */
+			/* critical section : synchronizes threads with timer */ 
 			sem_wait(&sem_ready);
 			if(this_func_local_time != time_elapsed) {
-
 				this_func_local_time = time_elapsed;
-				pthread_mutex_lock(&mutex_threads);
+				printf("Thread being executed : %d ----- time : ", tmp_thread->thread_ID);
 				printf("%02d\n", this_func_local_time);
-				pthread_mutex_unlock(&mutex_threads);
 			}
 			sem_post(&sem_ready);
 
 		}
 	}
+
 	pthread_exit(0);
 }

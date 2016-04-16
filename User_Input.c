@@ -76,9 +76,8 @@ void Request_Execution_And_Period_Times() {
 		printf("How long do you want to execute this program (sec) : ");
 		scanf("%d", &sec_to_run);
 
-		if(sec_to_run >= largest_period_time) {
+		if(sec_to_run >= largest_period_time)
 			acceptable_time = true;
-		}
 		else
 			printf("\nError: Your time needs to be at least the largest period time (%d)!\n", largest_period_time);
 	}
@@ -98,12 +97,13 @@ void Request_Execution_And_Period_Times() {
 /**
  * free everything :) - LIBERATION!!!!!!
  *
- * (memory leaks are bad)
+ * (memory leaks are bad)c
  */
 void free_list() {
 	int i;
 	for(i = 0; i < num_of_threads; i++) {
 		free(list_of_threads[i].deadline_list);
 	}
+
 	free(list_of_threads);
 }
