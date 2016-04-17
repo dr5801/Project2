@@ -98,11 +98,24 @@ void * timer() {
 void * scheduler() {
 	int i;
 	int shortest_period;
+	int thread_deadlines_met[num_of_threads];
+
+	/**
+	 * Alec: I thought this would be helpful. Each array position corresponds to each thread ID.
+	 * So if thread 0 completes it's first deadline then gets incremented to 1, I think that will help
+	 * us check which deadline should be checked next..... maybe?
+	 */
+	/* initialize thread_deadlines to 0 since none of the threads completed their first deadline */
+	for(i = 0; i < num_of_threads; i++) {
+		thread_deadlines_met[i] = 0;
+	}
 
 	while(!timer_finished) {
 		if(change_thread) {
-			thread_being_executed++;
-			change_thread = false;
+			int i = 0;
+			for(i = 0; i < num_of_threads; i++) {
+
+			}
 		}
 	}
 	pthread_exit(0);
