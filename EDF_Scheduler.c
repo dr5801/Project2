@@ -7,6 +7,7 @@
  */
 
 #include "EDF_Scheduler.h"
+ 	int this_func_local_time = 0;
 
 int main(int argc, char * argv[]) {
 
@@ -22,7 +23,33 @@ int main(int argc, char * argv[]) {
 			Request_Execution_And_Period_Times();
 			
 			
-			controller();
+			int i;
+			pthread_attr_t attr;
+			pthread_attr_init(&attr);
+			thread_being_executed = 0;
+
+			/* create all threads */
+			for(i = 0; i < num_of_threads; i++) {
+				
+				if(i == 0) {
+					/* create timer and scheduler thread */
+					pthread_create(&timer_thread, &attr, timer, NULL);
+					pthread_create(&scheduler_thread, &attr, scheduler, NULL);
+				}
+				pthread_create(&this_thread[i], &attr, runner, &list_of_threads[i]);
+			}
+
+			thread_is_ready = true; // threads are created, now they are ready
+
+			/* join all threads */
+			for(i = 0; i < num_of_threads; i++) {
+
+				if(i == 0) {
+					pthread_join(timer_thread, NULL);
+					pthread_join(scheduler_thread, NULL);
+				}
+				pthread_join(this_thread[i], NULL);
+			}
 
 			
 		}
@@ -48,9 +75,9 @@ void controller() {
 	thread_being_executed = 0;
 
 	/* create all threads */
-	for(i = 0; i < num_of_threads; i++) {
+	for(i = num_of_threads-1; i > 0; i--) {
 		
-		pthread_create(&this_thread[i], &attr, runner, list_of_threads);
+		pthread_create(&this_thread[i], &attr, runner, (void *)&list_of_threads[i]);
 		if(i == 0) {
 			/* create timer and scheduler thread */
 			pthread_create(&timer_thread, &attr, timer, NULL);
@@ -61,13 +88,13 @@ void controller() {
 	thread_is_ready = true; // threads are created, now they are ready
 
 	/* join all threads */
-	for(i = 0; i < num_of_threads; i++) {
+	for(i = num_of_threads-1; i > 0; i--) {
 
+		pthread_join(this_thread[i], NULL);
 		if(i == 0) {
 			pthread_join(timer_thread, NULL);
 			pthread_join(scheduler_thread, NULL);
 		}
-		pthread_join(this_thread[i], NULL);
 	}
 }
 
@@ -110,21 +137,22 @@ void * scheduler() {
  * Runs the main threads created : prints time (sec)
  * @param  my_thread 
  */
-void * runner(void * my_thead_info) {
-	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thead_info;
-	static int this_func_local_time = 0;
+void * runner(void * my_thread_info) {
+	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread_info;
+
 	sem_init(&sem_ready, 0, 1);
+	
 	while(!timer_finished) {
 		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
 
 			/* critical section : synchronizes threads with timer */ 
-			sem_wait(&sem_ready);
-			if(this_func_local_time != time_elapsed) {
+			if(this_func_local_time < time_elapsed) {
 				this_func_local_time = time_elapsed;
+				sem_wait(&sem_ready);
 				printf("Thread being executed : %d ----- time : ", tmp_thread->thread_ID);
 				printf("%02d\n", this_func_local_time);
+				sem_post(&sem_ready);
 			}
-			sem_post(&sem_ready);
 
 		}
 	}

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## got tired of writing make clean and make so many times
+make clean
+make
+echo 			## makes a new line
+./scheduler $1 	## $1 is the args -- for the number of threads you want

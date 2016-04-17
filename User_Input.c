@@ -37,8 +37,8 @@ void Request_Execution_And_Period_Times() {
 		scanf("%d", &this_execution_time);
 
 		if(this_execution_time >= 1) {
-			list_of_threads[i].execution_time = this_execution_time;
 			list_of_threads[i].thread_ID = i;
+			list_of_threads[i].execution_time = this_execution_time;
 			list_of_threads[i].is_done = false;
 		}
 		else {
