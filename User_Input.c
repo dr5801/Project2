@@ -30,6 +30,7 @@ void Request_Execution_And_Period_Times() {
 	int largest_period_time;
 	int this_execution_time;
 	int this_period;
+	int thread_with_shortest_deadline;
 
 	/* gets the execution time from the user */
 	for(i = 0; i < num_of_threads; i++) {
@@ -92,6 +93,19 @@ void Request_Execution_And_Period_Times() {
 			list_of_threads[i].deadline_list[j] = sum;
 		}		
 	}
+
+	/* first initial check of which thread should be ran first */
+	for(i = 0; i < num_of_threads-1; i++) {
+		if(i == 0) {
+			thread_with_shortest_deadline = list_of_threads[i].thread_ID;
+		}
+		
+		if(list_of_threads[i].period_for_thread > list_of_threads[i+1].period_for_thread) {
+			thread_with_shortest_deadline += 1;
+		}
+	}
+
+	thread_being_executed = thread_with_shortest_deadline;  // thread to be ran first
 }
 
 /**

@@ -21,37 +21,7 @@ int main(int argc, char * argv[]) {
 		if(valid) {
 			num_of_threads = atoi(argv[1]);
 			Request_Execution_And_Period_Times();
-			
-			
-			int i;
-			pthread_attr_t attr;
-			pthread_attr_init(&attr);
-			thread_being_executed = 0;
-
-			/* create all threads */
-			for(i = 0; i < num_of_threads; i++) {
-				
-				if(i == 0) {
-					/* create timer and scheduler thread */
-					pthread_create(&timer_thread, &attr, timer, NULL);
-					pthread_create(&scheduler_thread, &attr, scheduler, NULL);
-				}
-				pthread_create(&this_thread[i], &attr, runner, &list_of_threads[i]);
-			}
-
-			thread_is_ready = true; // threads are created, now they are ready
-
-			/* join all threads */
-			for(i = 0; i < num_of_threads; i++) {
-
-				if(i == 0) {
-					pthread_join(timer_thread, NULL);
-					pthread_join(scheduler_thread, NULL);
-				}
-				pthread_join(this_thread[i], NULL);
-			}
-
-			
+			controller();
 		}
 
 		
@@ -72,30 +42,29 @@ void controller() {
 	int i;
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
-	thread_being_executed = 0;
 
 	/* create all threads */
-	for(i = num_of_threads-1; i > 0; i--) {
+	for(i = 0; i < num_of_threads; i++) {
 		
-		pthread_create(&this_thread[i], &attr, runner, (void *)&list_of_threads[i]);
 		if(i == 0) {
 			/* create timer and scheduler thread */
 			pthread_create(&timer_thread, &attr, timer, NULL);
 			pthread_create(&scheduler_thread, &attr, scheduler, NULL);
 		}
+		pthread_create(&this_thread[i], &attr, runner, (void *)&list_of_threads[i]);
 	}
 
 	thread_is_ready = true; // threads are created, now they are ready
 
 	/* join all threads */
-	for(i = num_of_threads-1; i > 0; i--) {
+	for(i = 0; i < num_of_threads; i++) {
 
-		pthread_join(this_thread[i], NULL);
 		if(i == 0) {
 			pthread_join(timer_thread, NULL);
 			pthread_join(scheduler_thread, NULL);
 		}
-	}
+		pthread_join(this_thread[i], NULL);
+	}			
 }
 
 /**
@@ -124,6 +93,9 @@ void * timer() {
  * based on earliest deadline
  */
 void * scheduler() {
+	int i;
+	int shortest_period;
+
 	while(!timer_finished) {
 		if(change_thread) {
 			thread_being_executed++;
