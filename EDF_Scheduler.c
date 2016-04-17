@@ -72,6 +72,7 @@ void controller() {
  */
 void * timer() {
 	time_elapsed = 0;
+	int local_time = 0;
 	change_thread = false;
 	timer_finished = false;
 	int tmp_max_seconds = sec_to_run;
@@ -79,8 +80,10 @@ void * timer() {
 	while(tmp_max_seconds > 0) {
 		sleep(1);
 		time_elapsed++;
-		if(time_elapsed == 5) {
+		local_time++;
+		if(local_time == list_of_threads[thread_being_executed].execution_time) {
 			change_thread = true;
+			local_time = 0;
 		}
 		tmp_max_seconds--;
 	}
