@@ -7,7 +7,6 @@
  */
 
 #include "EDF_Scheduler.h"
- 	int this_func_local_time = 0;
 
 int main(int argc, char * argv[]) {
 
@@ -96,26 +95,20 @@ void * timer() {
  * based on earliest deadline
  */
 void * scheduler() {
-	int i;
+	int i, j;
 	int shortest_period;
 	int thread_deadlines_met[num_of_threads];
 
-	/**
-	 * Alec: I thought this would be helpful. Each array position corresponds to each thread ID.
-	 * So if thread 0 completes it's first deadline then gets incremented to 1, I think that will help
-	 * us check which deadline should be checked next..... maybe?
-	 */
-	/* initialize thread_deadlines to 0 since none of the threads completed their first deadline */
-	for(i = 0; i < num_of_threads; i++) {
-		thread_deadlines_met[i] = 0;
-	}
+	i = 0;
+	thread_being_executed = computed_deadline_order[i].thread_num;
+	printf("\nThread being executed : %d\n", thread_being_executed);
 
 	while(!timer_finished) {
 		if(change_thread) {
-			int i = 0;
-			for(i = 0; i < num_of_threads; i++) {
-
-			}
+			i++;
+			thread_being_executed = computed_deadline_order[i].thread_num;
+			printf("\nThread being executed : %d\n", thread_being_executed);
+			change_thread = false;
 		}
 	}
 	pthread_exit(0);
@@ -127,9 +120,9 @@ void * scheduler() {
  */
 void * runner(void * my_thread_info) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread_info;
+	static int this_func_local_time = 0;
 
 	sem_init(&sem_ready, 0, 1);
-	
 	while(!timer_finished) {
 		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
 
@@ -137,7 +130,7 @@ void * runner(void * my_thread_info) {
 			if(this_func_local_time < time_elapsed) {
 				this_func_local_time = time_elapsed;
 				sem_wait(&sem_ready);
-				printf("Thread being executed : %d ----- time : ", tmp_thread->thread_ID);
+				//printf("Thread being executed : %d ----- time : ", tmp_thread->thread_ID);
 				printf("%02d\n", this_func_local_time);
 				sem_post(&sem_ready);
 			}

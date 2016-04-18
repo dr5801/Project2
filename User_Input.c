@@ -30,7 +30,6 @@ void Request_Execution_And_Period_Times() {
 	int largest_period_time;
 	int this_execution_time;
 	int this_period;
-	int thread_with_shortest_deadline;
 
 	/* gets the execution time from the user */
 	for(i = 0; i < num_of_threads; i++) {
@@ -39,6 +38,7 @@ void Request_Execution_And_Period_Times() {
 
 		if(this_execution_time >= 1) {
 			list_of_threads[i].thread_ID = i;
+			list_of_threads[i].deadlines_completed = 0;
 			list_of_threads[i].execution_time = this_execution_time;
 			list_of_threads[i].is_done = false;
 		}
@@ -84,28 +84,78 @@ void Request_Execution_And_Period_Times() {
 	}
 
 	/* fill in the deadline_list of the calculated deadlines for each thread */
+	
 	for(i = 0; i < num_of_threads; i++) {
 		list_of_threads[i].deadline_list = malloc(sizeof(list_of_threads[i].deadline_list) * ((sec_to_run/list_of_threads[i].period_for_thread)+1));
 		int j = 0;
 		int sum = 0;
 		for(j = 0; j < ((sec_to_run/list_of_threads[i].period_for_thread) + 1); j++) {
-			sum += list_of_threads[i].period_for_thread;
-			list_of_threads[i].deadline_list[j] = sum;
+			// sum += list_of_threads[i].period_for_thread;
+			// list_of_threads[i].deadline_list[j] = sum;
+			// deadline_times[total_number_deadlines] = sum;
+			// computed_deadline_order[i].deadline = sum;
+			// computed_deadline_order[i].thread_num = i;
+			// printf("\ncomputed deadline -> %d and it's ID: %d\n", computed_deadline_order[i].deadline, computed_deadline_order[i].thread_num);
+			total_number_deadlines++;
 		}		
 	}
 
-	/* first initial check of which thread should be ran first */
-	for(i = 0; i < num_of_threads-1; i++) {
-		if(i == 0) {
-			thread_with_shortest_deadline = list_of_threads[i].thread_ID;
-		}
-		
-		if(list_of_threads[i].period_for_thread > list_of_threads[i+1].period_for_thread) {
-			thread_with_shortest_deadline += 1;
+	computed_deadline_order = malloc(sizeof(DEADLINE_LINK_THREAD) * total_number_deadlines+1);
+	int k = 0;
+	for(i = 0; i < num_of_threads; i++) {
+		int j;
+		int sum = 0;
+		for(j = 0; j < ((sec_to_run/list_of_threads[i].period_for_thread) + 1); j++) {
+			sum += list_of_threads[i].period_for_thread;
+			computed_deadline_order[k].deadline = sum;
+			computed_deadline_order[k].thread_num = list_of_threads[i].thread_ID;
+			// printf("\nunsorted deadline -> %d for thread : %d\n", computed_deadline_order[k].deadline, computed_deadline_order[k].thread_num);
+			k++;
 		}
 	}
 
-	thread_being_executed = thread_with_shortest_deadline;  // thread to be ran first
+	/* sort list of deadline_times */
+	// for(i = 0; i < total_number_deadlines-1; i++) {
+	// 	static int j, temp;
+	// 	for(j = 0; j < total_number_deadlines-1 - i; ++j) {
+	// 		if(computed_deadline_order[j].deadline > computed_deadline_order[j+1].deadline) {
+	// 			temp = computed_deadline_order[j+1].deadline;
+	// 			computed_deadline_order[j+1].deadline = computed_deadline_order[j].deadline;
+	// 			computed_deadline_order[j].deadline = temp;
+	// 		}
+	// 	}
+	// }
+	
+	for(i = 0; i < total_number_deadlines; i++) {
+		int y;
+		for(y = 0; y < total_number_deadlines-1; y++) {
+			if(computed_deadline_order[y].deadline > computed_deadline_order[y+1].deadline) {
+				int temp = computed_deadline_order[y+1].deadline;
+				int temp1 = computed_deadline_order[y+1].thread_num;
+
+				computed_deadline_order[y+1].deadline = computed_deadline_order[y].deadline;
+				computed_deadline_order[y+1].thread_num = computed_deadline_order[y].thread_num;
+
+				computed_deadline_order[y].deadline = temp;
+				computed_deadline_order[y].thread_num = temp1;
+
+			}
+		}
+	}
+
+	// printf("\n\nSORTED");
+	// for(i = 0; i < total_number_deadlines; i++) {
+	// 	printf("\ncoputed deadline -> %d and it's ID: %d\n", computed_deadline_order[i].deadline, computed_deadline_order[i].thread_num);
+	// }
+
+	// /* print thread execution times */
+	// for(i = 0; i < num_of_threads; i++) {
+	// 	int j;
+	// 	printf("\nPrinting deadline list of thread %d:\n", i);
+	// 	for(j = 0; j < ((sec_to_run/list_of_threads[i].period_for_thread) + 1); j++) {
+	// 		printf("%d, ", list_of_threads[i].deadline_list[j]);
+	// 	}
+	// }
 }
 
 /**
@@ -118,6 +168,10 @@ void free_list() {
 	for(i = 0; i < num_of_threads; i++) {
 		free(list_of_threads[i].deadline_list);
 	}
+
+	// for(i = 0; i < total_number_deadlines; i++) {
+		free(computed_deadline_order);
+	// }
 
 	free(list_of_threads);
 }

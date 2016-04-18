@@ -34,22 +34,29 @@ typedef struct THREAD_INFO {
 	int thread_ID;
 	int execution_time;
 	int period_for_thread;
+	int deadlines_completed;
 	bool is_done;
 	int * deadline_list;
 }THREAD_INFO;
 
-THREAD_INFO * list_of_threads;
+typedef struct DEADLINE_LINK_THREAD {
+	int thread_num;
+	int deadline;
+}DEADLINE_LINK_THREAD;
 
+THREAD_INFO * list_of_threads;
+DEADLINE_LINK_THREAD * computed_deadline_order;
 
 /* functions in User_Input file */
 bool Check_Num_Threads(int num_of_threads);
 void Request_Execution_And_Period_Times();
 void free_list();
 
-void * timer();			// keeps track of time
-void * scheduler();		// schedules what thread goes next
-void * runner();		// runs the main threads 
-void controller();		// creates the threads
+void * timer();						// keeps track of time
+void * scheduler();					// schedules what thread goes next
+void * runner();					// runs the main threads 
+void controller();					// creates the threads
+void predict_thread_executions(); 	// orders which sequence of threads should be ran
 
 
 pthread_t this_thread[MAX_NUM_THREADS];  // threads that run and print time
@@ -65,7 +72,11 @@ int num_of_threads;
 int sec_to_run;
 int time_elapsed;
 int thread_being_executed;
+int current_period;
+int deadline_times[1000];
+int predicted_executions[1000];
 bool thread_is_ready;
+int total_number_deadlines;
 
 /* make flags volatile so compiler doesn't ignore them */
 volatile bool change_thread;
