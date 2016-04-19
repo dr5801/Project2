@@ -68,15 +68,15 @@ pthread_mutex_t mutex_timer;
 pthread_mutex_t mutex_threads;
 sem_t sem_ready;
 
-int num_of_threads;
-int sec_to_run;
-int time_elapsed;
-int thread_being_executed;
-int current_period;
-int deadline_times[1000];
-int predicted_executions[1000];
-bool thread_is_ready;
-int total_number_deadlines;
+volatile int num_of_threads;
+volatile int sec_to_run;
+volatile int time_elapsed;
+volatile int thread_being_executed;
+volatile int current_period;
+volatile int deadline_times[1000];
+volatile int predicted_executions[1000];
+volatile bool thread_is_ready;
+volatile int total_number_deadlines;
 
 /* make flags volatile so compiler doesn't ignore them */
 volatile bool change_thread;
