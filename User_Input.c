@@ -41,7 +41,7 @@ void request_exection_and_period_times() {
 			list_of_threads[i].deadlines_completed = 0;
 			list_of_threads[i].is_idling = true;
 			list_of_threads[i].execution_time = this_execution_time;
-			list_of_threads[i].is_done = false;
+			list_of_threads[i].can_be_ran = true;
 		}
 		else {
 			printf("\nError : You need to have an execution time of at least 1!\n");

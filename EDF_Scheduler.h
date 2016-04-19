@@ -36,7 +36,7 @@ typedef struct THREAD_INFO {
 	int period_for_thread;
 	int deadlines_completed;
 	bool is_idling;
-	bool is_done;
+	bool can_be_ran;
 	int * deadline_list;
 }THREAD_INFO;
 

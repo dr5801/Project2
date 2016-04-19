@@ -12,8 +12,7 @@ int main(int argc, char * argv[]) {
 
 	/* a user must input how many threads they desire */
 	if(argc == 2) {
-		pthread_mutex_init(&mutex_timer, NULL);
-		pthread_mutex_init(&mutex_threads, NULL);
+		
 
 		bool valid = check_num_threads( atoi(argv[1]) );
 		bool can_execute = false;
@@ -22,8 +21,10 @@ int main(int argc, char * argv[]) {
 			num_of_threads = atoi(argv[1]);
 			request_exection_and_period_times();
 		
-			if(threads_meet_deadlines())
+			if(threads_meet_deadlines()) {
+				thread_being_executed = computed_deadline_order[0].thread_num;
 				controller();
+			}
 			else
 				printf("\nThese threads can't be scheduled. Program will exit.");
 		}
@@ -81,10 +82,12 @@ void * timer() {
 	timer_finished = false;
 	int tmp_max_seconds = sec_to_run;
 
+	sleep(1);
 	while(tmp_max_seconds > 0) {
-		sleep(1);
+
 		time_elapsed++;
 		local_time++;
+		sleep(1);
 		if(local_time == list_of_threads[thread_being_executed].execution_time) {
 			change_thread = true;
 			local_time = 0;
@@ -104,10 +107,9 @@ void * scheduler() {
 	int shortest_period;
 	int thread_deadlines_met[num_of_threads];
 
-	i = 0;
-	thread_being_executed = computed_deadline_order[i].thread_num;
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
+	i = 0;
 	while(!timer_finished) {
 		if(change_thread) {
 			i++;
@@ -121,7 +123,7 @@ void * scheduler() {
 			else {
 				list_of_threads[thread_being_executed-1].deadlines_completed++;
 				list_of_threads[thread_being_executed-1].is_idling = true;
-			}
+			}	
 
 			printf("\nThread being executed : %d\n", thread_being_executed);
 			change_thread = false;
@@ -138,20 +140,28 @@ void * runner(void * my_thread_info) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread_info;
 	static int this_func_local_time = 0;
 
+	pthread_mutex_init(&mutex_threads, NULL);
 	sem_init(&sem_ready, 0, 1);
 	while(!timer_finished) {
-		if(thread_is_ready && (tmp_thread->thread_ID == thread_being_executed)) {
+
+		pthread_mutex_lock(&mutex_threads);
+		if(time_elapsed >= tmp_thread->deadline_list[tmp_thread->deadlines_completed])
+			tmp_thread->can_be_ran = true;
+		pthread_mutex_unlock(&mutex_threads);
+
+		pthread_mutex_lock(&mutex_threads);
+		if( (tmp_thread->can_be_ran) && (tmp_thread->thread_ID == thread_being_executed) ) {
 
 			/* critical section : synchronizes threads with timer */ 
-			if(this_func_local_time < time_elapsed) {
-				this_func_local_time = time_elapsed;
+			if(this_func_local_time < time_elapsed && !change_thread) {
 				sem_wait(&sem_ready);
-				//printf("Thread being executed : %d ----- time : ", tmp_thread->thread_ID);
-				printf("%02d\n", this_func_local_time);
+				printf("%02d\n", time_elapsed);
 				sem_post(&sem_ready);
+				this_func_local_time = time_elapsed;
 			}
 
 		}
+		pthread_mutex_unlock(&mutex_threads);
 	}
 
 	pthread_exit(0);
