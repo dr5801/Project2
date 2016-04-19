@@ -42,6 +42,7 @@ typedef struct THREAD_INFO {
 
 typedef struct DEADLINE_LINK_THREAD {
 	int thread_num;
+	bool is_done;
 	int deadline;
 }DEADLINE_LINK_THREAD;
 
@@ -82,5 +83,6 @@ volatile int total_number_deadlines;
 volatile bool change_thread;
 volatile bool timer_finished;
 volatile static bool print;
+volatile int deadline_being_ran;
 
 #endif // EDF_SCHEDULER_H

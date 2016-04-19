@@ -110,6 +110,7 @@ void request_exection_and_period_times() {
 			sum += list_of_threads[i].period_for_thread;
 			computed_deadline_order[k].deadline = sum;
 			computed_deadline_order[k].thread_num = list_of_threads[i].thread_ID;
+			computed_deadline_order[k].is_done = false;
 			// printf("\nunsorted deadline -> %d for thread : %d\n", computed_deadline_order[k].deadline, computed_deadline_order[k].thread_num);
 			k++;
 		}
