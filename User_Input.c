@@ -159,6 +159,26 @@ void Request_Execution_And_Period_Times() {
 }
 
 /**
+ * computationally checks to see if the threads can be ran
+ */
+bool check_schedule() {
+	int i;
+	double sumnation = 0.0;
+	bool can_execute;
+
+	for(i = 0; i < num_of_threads; i++) {
+		sumnation += ((double)list_of_threads[i].execution_time/(double)list_of_threads[i].period_for_thread);
+	}
+
+	if(sumnation <= 1.0000)
+		can_execute = true;
+	else
+		can_execute = false;
+
+	return can_execute;
+}
+
+/**
  * free everything :) - LIBERATION!!!!!!
  *
  * (memory leaks are bad)c

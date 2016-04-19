@@ -16,11 +16,17 @@ int main(int argc, char * argv[]) {
 		pthread_mutex_init(&mutex_threads, NULL);
 
 		bool valid = Check_Num_Threads( atoi(argv[1]) );
+		bool can_execute = false;
 
 		if(valid) {
 			num_of_threads = atoi(argv[1]);
 			Request_Execution_And_Period_Times();
-			controller();
+			can_execute = check_schedule();
+
+			if(can_execute)
+				controller();
+			else
+				printf("\nThese threads can't be scheduled. Program will exit.");
 		}
 
 		

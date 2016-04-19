@@ -48,8 +48,6 @@ THREAD_INFO * list_of_threads;
 DEADLINE_LINK_THREAD * computed_deadline_order;
 
 /* functions in User_Input file */
-bool Check_Num_Threads(int num_of_threads);
-void Request_Execution_And_Period_Times();
 void free_list();
 
 void * timer();						// keeps track of time
@@ -57,7 +55,9 @@ void * scheduler();					// schedules what thread goes next
 void * runner();					// runs the main threads 
 void controller();					// creates the threads
 void predict_thread_executions(); 	// orders which sequence of threads should be ran
-
+bool Check_Num_Threads(int num_of_threads);
+void Request_Execution_And_Period_Times();
+bool check_schedule();
 
 pthread_t this_thread[MAX_NUM_THREADS];  // threads that run and print time
 pthread_t timer_thread;					 // thread to keep track of time
@@ -68,6 +68,7 @@ pthread_mutex_t mutex_timer;
 pthread_mutex_t mutex_threads;
 sem_t sem_ready;
 
+/* make all variables used between processes volatile so compiler doesn't ignore them */
 volatile int num_of_threads;
 volatile int sec_to_run;
 volatile int time_elapsed;
@@ -77,8 +78,6 @@ volatile int deadline_times[1000];
 volatile int predicted_executions[1000];
 volatile bool thread_is_ready;
 volatile int total_number_deadlines;
-
-/* make flags volatile so compiler doesn't ignore them */
 volatile bool change_thread;
 volatile bool timer_finished;
 volatile static bool print;
