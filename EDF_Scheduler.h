@@ -35,6 +35,7 @@ typedef struct THREAD_INFO {
 	int execution_time;
 	int period_for_thread;
 	int deadlines_completed;
+	bool is_idling;
 	bool is_done;
 	int * deadline_list;
 }THREAD_INFO;
@@ -55,9 +56,9 @@ void * scheduler();					// schedules what thread goes next
 void * runner();					// runs the main threads 
 void controller();					// creates the threads
 void predict_thread_executions(); 	// orders which sequence of threads should be ran
-bool Check_Num_Threads(int num_of_threads);
-void Request_Execution_And_Period_Times();
-bool check_schedule();
+bool check_num_threads(int num_of_threads);
+void request_exection_and_period_times();
+bool threads_meet_deadlines();
 
 pthread_t this_thread[MAX_NUM_THREADS];  // threads that run and print time
 pthread_t timer_thread;					 // thread to keep track of time

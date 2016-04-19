@@ -5,7 +5,7 @@
  * @param  num_of_threads 
  * @return true or false
  */
-bool Check_Num_Threads(int num_of_threads) {
+bool check_num_threads(int num_of_threads) {
 	if(num_of_threads >= 1 && num_of_threads <= MAX_NUM_THREADS)
 		return true;
 	else if(num_of_threads < 1) {
@@ -24,7 +24,7 @@ bool Check_Num_Threads(int num_of_threads) {
  * Requests the period time for each thread from the user.
  * Requests how long (sec) the user would like it to run.
  */
-void Request_Execution_And_Period_Times() {
+void request_exection_and_period_times() {
 	list_of_threads = malloc(sizeof(THREAD_INFO) * num_of_threads);
 	int i;
 	int largest_period_time;
@@ -39,6 +39,7 @@ void Request_Execution_And_Period_Times() {
 		if(this_execution_time >= 1) {
 			list_of_threads[i].thread_ID = i;
 			list_of_threads[i].deadlines_completed = 0;
+			list_of_threads[i].is_idling = true;
 			list_of_threads[i].execution_time = this_execution_time;
 			list_of_threads[i].is_done = false;
 		}
@@ -161,7 +162,7 @@ void Request_Execution_And_Period_Times() {
 /**
  * computationally checks to see if the threads can be ran
  */
-bool check_schedule() {
+bool threads_meet_deadlines() {
 	int i;
 	double sumnation = 0.0;
 	bool can_execute;

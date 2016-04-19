@@ -15,15 +15,14 @@ int main(int argc, char * argv[]) {
 		pthread_mutex_init(&mutex_timer, NULL);
 		pthread_mutex_init(&mutex_threads, NULL);
 
-		bool valid = Check_Num_Threads( atoi(argv[1]) );
+		bool valid = check_num_threads( atoi(argv[1]) );
 		bool can_execute = false;
 
 		if(valid) {
 			num_of_threads = atoi(argv[1]);
-			Request_Execution_And_Period_Times();
-			can_execute = check_schedule();
-
-			if(can_execute)
+			request_exection_and_period_times();
+		
+			if(threads_meet_deadlines())
 				controller();
 			else
 				printf("\nThese threads can't be scheduled. Program will exit.");
@@ -113,6 +112,17 @@ void * scheduler() {
 		if(change_thread) {
 			i++;
 			thread_being_executed = computed_deadline_order[i].thread_num;
+			list_of_threads[thread_being_executed].is_idling = false;
+			
+			if(thread_being_executed-1 == -1) {
+				list_of_threads[num_of_threads-1].deadlines_completed++;
+				list_of_threads[num_of_threads-1].is_idling = true;
+			}
+			else {
+				list_of_threads[thread_being_executed-1].deadlines_completed++;
+				list_of_threads[thread_being_executed-1].is_idling = true;
+			}
+
 			printf("\nThread being executed : %d\n", thread_being_executed);
 			change_thread = false;
 		}
