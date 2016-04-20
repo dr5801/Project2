@@ -40,6 +40,7 @@ void request_exection_and_period_times() {
 			list_of_threads[i].thread_ID = i;
 			list_of_threads[i].deadlines_completed = 0;
 			list_of_threads[i].is_idling = true;
+			list_of_threads[i].deadline_list_length = 0;
 			list_of_threads[i].execution_time = this_execution_time;
 			list_of_threads[i].can_be_ran = true;
 		}
@@ -91,8 +92,8 @@ void request_exection_and_period_times() {
 		int j = 0;
 		int sum = 0;
 		for(j = 0; j < ((sec_to_run/list_of_threads[i].period_for_thread) + 1); j++) {
-			// sum += list_of_threads[i].period_for_thread;
-			// list_of_threads[i].deadline_list[j] = sum;
+			sum += list_of_threads[i].period_for_thread;
+			list_of_threads[i].deadline_list[j] = sum;
 			// deadline_times[total_number_deadlines] = sum;
 			// computed_deadline_order[i].deadline = sum;
 			// computed_deadline_order[i].thread_num = i;
@@ -145,23 +146,41 @@ void request_exection_and_period_times() {
 		}
 	}
 
-	int y = 0;
-	int sum[num_of_threads];
-	int current_position;
-	int reset = 0;
-	for(i = 0; i < sec_to_run; i++) {
-		current_position = computed_deadline_order[y].thread_num;
-		if(reset == list_of_threads[current_position].execution_time) {
-			sum[current_position] += i;
-			y++;
-			reset = 0;
-		}
-		reset++;
-	}
+	// int y = 0;
+	// int sum[num_of_threads];
+	// int current_position;
+	// int reset = 0;
+	// bool change = false;
+	// bool c = false;
 
-	for(i = 0; i < num_of_threads; i++) {
-		printf("%d\n", sum[i]);
-	}
+	// i = 0;
+	// while(i < num_of_threads) {
+	// 	sum[i] = 0;
+	// 	i++;
+	// }
+
+	// for(i = 1; i < sec_to_run; i++) {
+	// 	reset++;
+	// 	current_position = computed_deadline_order[y].thread_num;
+	// 	if(reset == list_of_threads[current_position].execution_time) {
+	// 		change = true;
+	// 		sum[current_position] += reset;
+	// 		y++;
+	// 		reset = 0;
+	// 	}
+
+	// 	if(change) {
+	// 		if(i+1 >= list_of_threads[computed_deadline_order[y+1].thread_num].deadline_list[list_of_threads[computed_deadline_order[y+1].thread_num].deadlines_completed-1) {
+				
+	// 		}
+	// 	}
+
+
+	// }
+
+	// for(i = 0; i < num_of_threads; i++) {
+	// 	printf("%d\n", sum[i]);
+	// }
 
 	// printf("\n\nSORTED");
 	// for(i = 0; i < total_number_deadlines; i++) {
