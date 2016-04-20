@@ -88,5 +88,6 @@ volatile bool change_thread;
 volatile bool timer_finished;
 volatile static bool print;
 volatile int deadline_being_ran;
+volatile static bool cpu_idle;
 
 #endif // EDF_SCHEDULER_H
