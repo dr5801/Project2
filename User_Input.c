@@ -145,6 +145,24 @@ void request_exection_and_period_times() {
 		}
 	}
 
+	int y = 0;
+	int sum[num_of_threads];
+	int current_position;
+	int reset = 0;
+	for(i = 0; i < sec_to_run; i++) {
+		current_position = computed_deadline_order[y].thread_num;
+		if(reset == list_of_threads[current_position].execution_time) {
+			sum[current_position] += i;
+			y++;
+			reset = 0;
+		}
+		reset++;
+	}
+
+	for(i = 0; i < num_of_threads; i++) {
+		printf("%d\n", sum[i]);
+	}
+
 	// printf("\n\nSORTED");
 	// for(i = 0; i < total_number_deadlines; i++) {
 	// 	printf("\ncoputed deadline -> %d and it's ID: %d\n", computed_deadline_order[i].deadline, computed_deadline_order[i].thread_num);

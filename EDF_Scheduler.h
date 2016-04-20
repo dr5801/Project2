@@ -42,6 +42,7 @@ typedef struct THREAD_INFO {
 
 typedef struct DEADLINE_LINK_THREAD {
 	int thread_num;
+	bool cpu_idle;
 	bool is_done;
 	int deadline;
 }DEADLINE_LINK_THREAD;

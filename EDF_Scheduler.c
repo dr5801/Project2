@@ -21,13 +21,13 @@ int main(int argc, char * argv[]) {
 			num_of_threads = atoi(argv[1]);
 			request_exection_and_period_times();
 		
-			if(threads_meet_deadlines()) {
-				thread_being_executed = computed_deadline_order[0].thread_num;
-				deadline_being_ran = 0;
-				controller();
-			}
-			else
-				printf("\nThese threads can't be scheduled. Program will exit.");
+			// if(threads_meet_deadlines()) {
+			// 	thread_being_executed = computed_deadline_order[0].thread_num;
+			// 	deadline_being_ran = 0;
+			// 	controller();
+			// }
+			// else
+			// 	printf("\nThese threads can't be scheduled. Program will exit.");
 		}
 
 		
@@ -90,6 +90,10 @@ void * timer() {
 		local_time++;
 		sleep(1);
 		if(local_time == list_of_threads[thread_being_executed].execution_time) {
+			list_of_threads[thread_being_executed].can_be_ran = false;
+			list_of_threads[thread_being_executed].deadlines_completed++;
+			list_of_threads[thread_being_executed].is_idling = true;
+			computed_deadline_order[deadline_being_ran].is_done = true;
 			change_thread = true;
 			local_time = 0;
 		}
@@ -115,11 +119,8 @@ void * scheduler() {
 	while(!timer_finished) {
 		if(change_thread) {
 
-			computed_deadline_order[deadline_being_ran].is_done = true;
-			list_of_threads[thread_being_executed].is_idling = true;
-			list_of_threads[thread_being_executed].can_be_ran = false;
-			
-			for(j = 0; j < i && !previous_thread_needs_ran; j--) {
+			/* look left of current thread being executed */
+			for(j = 0; j < i && !previous_thread_needs_ran; j++) {
 				if(!computed_deadline_order[j].is_done) {
 					previous_thread_needs_ran = true;
 				}
@@ -127,13 +128,29 @@ void * scheduler() {
 
 			if(!previous_thread_needs_ran) {
 				bool found = false;
-				while(computed_deadline_order[i].is_done && !found) {
-					i++;
-					if(list_of_threads[computed_deadline_order[i].thread_num].can_be_ran) {
-						thread_being_executed = computed_deadline_order[i].thread_num;
+				while (i < total_number_deadlines && !found) {
+					
+					if(list_of_threads[computed_deadline_order[i+1].thread_num].deadlines_completed == 0) {
+						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						list_of_threads[thread_being_executed].is_idling = false;
 						found = true;
+
+						printf("first if");
 					}
+					/* checking if total time >= the next thread's previous deadline */
+					else if(list_of_threads[computed_deadline_order[i+1].thread_num].can_be_ran) {
+						
+						thread_being_executed = computed_deadline_order[i+1].thread_num;
+						list_of_threads[thread_being_executed].is_idling = false;
+						found = true;
+						printf("DID YOU NOT MAKEIT HERE?!?!?!!?");
+					}
+					i++;
+				}
+				
+
+				if(!found) {
+					printf("NOOOOOTHING FOUND!!!!");
 				}
 			} 
 			else {
@@ -180,11 +197,20 @@ void * runner(void * my_thread_info) {
 	sem_init(&sem_ready, 0, 1);
 	while(!timer_finished) {
 
-		if(time_elapsed >= tmp_thread->deadline_list[tmp_thread->deadlines_completed])
-			tmp_thread->can_be_ran = true;
+		int current_thread_num = tmp_thread->thread_ID;
+		if(tmp_thread->deadlines_completed != 0) {
+			if(time_elapsed+2 >= tmp_thread->deadline_list[tmp_thread->deadlines_completed-1]) {
+				// pthread_mutex_lock(&mutex_threads);
+				list_of_threads[current_thread_num].can_be_ran = true;
+				// pthread_mutex_lock(&mutex_threads);
+				printf("\n\nThread %d can be ran now!!!!\n\n", tmp_thread->thread_ID);
+			}
+			
+		}
 
 		// pthread_mutex_lock(&mutex_threads);
-		if( (tmp_thread->can_be_ran) && (tmp_thread->thread_ID == thread_being_executed) ) {
+		if( (list_of_threads[current_thread_num].can_be_ran) && (list_of_threads[current_thread_num].thread_ID == thread_being_executed) ) {
+
 
 			/* critical section : synchronizes threads with timer */ 
 			if(this_func_local_time < time_elapsed && !change_thread) {
