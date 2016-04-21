@@ -48,8 +48,6 @@ typedef struct DEADLINE_LINK_THREAD {
 	int deadline;
 }DEADLINE_LINK_THREAD;
 
-
-
 /*--------------- FUNCTIONS for threads and user input ---------------*/
 void * timer();								// keeps track of time
 void * scheduler();							// schedules what thread goes next
@@ -60,7 +58,6 @@ bool check_num_threads(int num_of_threads); // checks if the number of threads t
 void request_execution_and_period_times();	// user input for execution and period times
 bool threads_meet_deadlines();				// checks to see if threads meet deadlines
 void free_list();
-
 
 /*--------------- All threads used ---------------*/
 pthread_t this_thread[MAX_NUM_THREADS];  // threads that run and print time
