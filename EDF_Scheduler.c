@@ -30,7 +30,7 @@ int main(int argc, char * argv[]) {
 				printf("killed\n");
 			}
 			else
-				printf("\nThese threads can't be scheduled. Program will exit.");
+				printf("\nThese threads can't be scheduled. Program will exit.\n\n");
 		}
 		
 		free_list();  // deconstruct the list
