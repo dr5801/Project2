@@ -24,7 +24,7 @@ bool check_num_threads(int num_of_threads) {
  * Requests the period time for each thread from the user.
  * Requests how long (sec) the user would like it to run.
  */
-void request_exection_and_period_times() {
+void request_execution_and_period_times() {
 	list_of_threads = malloc(sizeof(THREAD_INFO) * num_of_threads);
 	int i;
 	int largest_period_time;

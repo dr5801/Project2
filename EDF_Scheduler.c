@@ -17,17 +17,19 @@ int main(int argc, char * argv[]) {
 		bool valid = check_num_threads( atoi(argv[1]) );
 		bool can_execute = false;
 
+		/* check to see if the user entered in valid numbers */
 		if(valid) {
 			num_of_threads = atoi(argv[1]);
-			request_exection_and_period_times();
+			request_execution_and_period_times();
 		
+			/* check to see if the threads can meet their deadlines */
 			if(threads_meet_deadlines()) {
 				thread_being_executed = computed_deadline_order[0].thread_num;
 				list_of_threads[thread_being_executed].is_idling = false;
 				deadline_being_ran = 0;
 				cpu_idle = false;
 				controller();
-				printf("kill\n");
+				printf("killed\n");
 			}
 			else
 				printf("\nThese threads can't be scheduled. Program will exit.");
@@ -86,7 +88,7 @@ void * timer() {
 	timer_finished = false;
 	int tmp_max_seconds = sec_to_run;
 
-	while(time_elapsed < (sec_to_run-3)) {
+	while(time_elapsed < (sec_to_run-2)) {
 
 		sleep(1);
 		time_elapsed++;
@@ -128,7 +130,7 @@ void * scheduler() {
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
 	i = 0;
-	while(time_elapsed < sec_to_run-1) {
+	while(time_elapsed < sec_to_run-2) {
 		if(change_thread) {
 
 			j = i;
@@ -205,7 +207,7 @@ void * scheduler() {
 
 /**
  * Runs the main threads created : prints time (sec)
- * @param  my_thread 
+ * @param  my_thread_info
  */
 void * runner(void * my_thread_info) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread_info;
@@ -219,7 +221,7 @@ void * runner(void * my_thread_info) {
 		if(!cpu_idle) {
 			if(tmp_thread->deadlines_completed > 0) {
 				pthread_mutex_lock(&mutex_threads);
-				if(time_elapsed >= tmp_thread->deadline_list[tmp_thread->deadlines_completed - 1] && !tmp_thread->can_be_ran) {
+				if(time_elapsed+1 >= tmp_thread->deadline_list[tmp_thread->deadlines_completed - 1] && !tmp_thread->can_be_ran) {
 					tmp_thread->can_be_ran = true;
 				}
 				pthread_mutex_unlock(&mutex_threads);
