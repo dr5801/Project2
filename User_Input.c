@@ -1,3 +1,11 @@
+/**
+ * Project 2   : CPU Scheduling
+ * Programmers : Drew Rife & Alec Waddelow
+ * Course      : CMPE320
+ * Section     : 2(11-12:50pm)
+ * Instructor  : S. Lee
+ */
+
 #include "EDF_Scheduler.h"
 
 /**
@@ -18,7 +26,6 @@ bool check_num_threads(int num_of_threads) {
 	}
 }
 
-
 /**
  * Requests the execution time for each thread from the user.
  * Requests the period time for each thread from the user.
@@ -36,6 +43,7 @@ void request_execution_and_period_times() {
 		printf("Execution time for Thread %02d : ", i);
 		scanf("%d", &this_execution_time);
 
+		/* initializes the array */
 		if(this_execution_time >= 1) {
 			list_of_threads[i].thread_ID = i;
 			list_of_threads[i].deadlines_completed = 0;
@@ -86,7 +94,6 @@ void request_execution_and_period_times() {
 	}
 
 	/* fill in the deadline_list of the calculated deadlines for each thread */
-	
 	for(i = 0; i < num_of_threads; i++) {
 		list_of_threads[i].deadline_list = malloc(sizeof(list_of_threads[i].deadline_list) * ((sec_to_run/list_of_threads[i].period_for_thread)+1));
 		int j = 0;
@@ -98,8 +105,9 @@ void request_execution_and_period_times() {
 		}		
 	}
 
-	computed_deadline_order = malloc(sizeof(DEADLINE_LINK_THREAD) * total_number_deadlines+1);
 	int k = 0;
+	/* fill the deadlines in the struct array of computed the computed deadlines for each thread */
+	computed_deadline_order = malloc(sizeof(DEADLINE_LINK_THREAD) * total_number_deadlines+1);
 	for(i = 0; i < num_of_threads; i++) {
 		int j;
 		int sum = 0;
@@ -112,6 +120,7 @@ void request_execution_and_period_times() {
 		}
 	}
 	
+	/* sort the deadline struct list from shortest periods to greatest periods to run threads in order */
 	for(i = 0; i < total_number_deadlines; i++) {
 		int y;
 		for(y = 0; y < total_number_deadlines-1; y++) {
@@ -151,9 +160,7 @@ bool threads_meet_deadlines() {
 }
 
 /**
- * free everything :) - LIBERATION!!!!!!
- *
- * (memory leaks are bad)c
+ * free everything :)
  */
 void free_list() {
 	int i;

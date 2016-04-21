@@ -84,7 +84,7 @@ void * timer() {
 	change_thread = false;
 	timer_finished = false;
 
-	while(time_elapsed < (sec_to_run-2)) {
+	while(time_elapsed < (sec_to_run)) {
 
 		sleep(1);
 		time_elapsed++;
@@ -123,7 +123,7 @@ void * scheduler() {
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
 	i = 0;
-	while(time_elapsed < sec_to_run-2) {
+	while(time_elapsed < sec_to_run) {
 		if(change_thread) {
 
 			j = i;
