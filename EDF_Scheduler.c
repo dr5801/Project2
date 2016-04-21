@@ -122,7 +122,6 @@ void * scheduler() {
 	int thread_deadlines_met[num_of_threads];
 	bool previous_thread_needs_ran = false;
 	bool just_idle = false;
-	bool found = false;
 
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
@@ -145,6 +144,7 @@ void * scheduler() {
 
 			int tmp = i;
 			if(!previous_thread_needs_ran) {
+				bool found = false;
 				while (i < total_number_deadlines && !found) {
 					
 					if(list_of_threads[computed_deadline_order[i+1].thread_num].deadlines_completed == 0) {
@@ -157,7 +157,8 @@ void * scheduler() {
 					}
 					/* checking if total time >= the next thread's previous deadline */
 					else if(list_of_threads[computed_deadline_order[i+1].thread_num].can_be_ran
-						&& !computed_deadline_order[i+1].is_done) {
+						&& !computed_deadline_order[i+1].is_done
+						&& list_of_threads[computed_deadline_order[i+1].thread_num].is_idling) {
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
 						i++;
@@ -217,7 +218,7 @@ void * runner(void * my_thread_info) {
 				pthread_mutex_unlock(&mutex_threads);
 			}
 			
-			if((tmp_thread->thread_ID == thread_being_executed) && (tmp_thread->can_be_ran) && (!tmp_thread->is_idling) ) {
+			if((tmp_thread->thread_ID == thread_being_executed) && (tmp_thread->can_be_ran) && (!tmp_thread->is_idling) && !cpu_idle) {
 
 				/* critical section : synchronizes threads with timer */ 
 				if(this_func_local_time < time_elapsed && !change_thread) {
