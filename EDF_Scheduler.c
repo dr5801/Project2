@@ -55,7 +55,6 @@ void controller() {
 
 	/* create all threads */
 	for(i = 0; i < num_of_threads; i++) {
-		
 		if(i == 0) {
 			/* create timer and scheduler thread */
 			pthread_create(&timer_thread, &attr, timer, NULL);
@@ -69,7 +68,6 @@ void controller() {
 
 	/* join all threads */
 	for(i = 0; i < num_of_threads; i++) {
-
 		if(i == 0) {
 			pthread_join(timer_thread, NULL);
 			pthread_join(scheduler_thread, NULL);
@@ -240,6 +238,5 @@ void * runner(void * my_thread_info) {
 			}
 		}
 	}
-
-	pthread_exit(0);
+	pthread_exit(0); // exit the thread when finished
 }
