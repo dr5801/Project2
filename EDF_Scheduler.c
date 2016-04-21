@@ -86,7 +86,7 @@ void * timer() {
 	timer_finished = false;
 	int tmp_max_seconds = sec_to_run;
 
-	while(tmp_max_seconds > 0) {
+	while(time_elapsed < (sec_to_run-3)) {
 
 		sleep(1);
 		time_elapsed++;
@@ -128,7 +128,7 @@ void * scheduler() {
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
 	i = 0;
-	while(!timer_finished) {
+	while(time_elapsed < sec_to_run-1) {
 		if(change_thread) {
 
 			j = i;
@@ -182,7 +182,7 @@ void * scheduler() {
 				}
 				/* if nothing - then it is obviously CPU Idling */
 				else {
-					printf("CPU Idling");
+					printf("CPU is idling now\n");
 					i = tmp;
 					cpu_idle = true;
 					change_thread = false;					

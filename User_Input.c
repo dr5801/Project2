@@ -128,13 +128,8 @@ void request_exection_and_period_times() {
 			}
 		}
 	}
-
-for(i = 0; i < total_number_deadlines; i++) {
-	printf("thread_num -> %d and it's execution time -> %d and it's period time -> %d\n", 
-		computed_deadline_order[i].thread_num, list_of_threads[computed_deadline_order[i].thread_num].execution_time, computed_deadline_order[i].deadline);
 }
 
-}
 /**
  * computationally checks to see if the threads can be ran
  */
