@@ -27,6 +27,7 @@ int main(int argc, char * argv[]) {
 				deadline_being_ran = 0;
 				cpu_idle = false;
 				controller();
+				printf("kill\n");
 			}
 			else
 				printf("\nThese threads can't be scheduled. Program will exit.");
@@ -41,6 +42,7 @@ int main(int argc, char * argv[]) {
 	else {
 		printf("Error: You only need to enter how many threads you want. Nothing else. TERMINATING...\n");
 	}
+	return 0;
 }
 
 /**
@@ -86,12 +88,15 @@ void * timer() {
 	timer_finished = false;
 	int tmp_max_seconds = sec_to_run;
 
-	sleep(1);
 	while(tmp_max_seconds > 0) {
 
+		sleep(1);
 		time_elapsed++;
 		local_time++;
-		sleep(1);
+		tmp_max_seconds--;
+		printf("%02d\n", time_elapsed);
+
+		/* change threads if local time = the current thread running's execution time */
 		if(local_time == list_of_threads[thread_being_executed].execution_time && !cpu_idle) {
 			list_of_threads[thread_being_executed].can_be_ran = false;
 			list_of_threads[thread_being_executed].deadlines_completed++;
@@ -100,16 +105,18 @@ void * timer() {
 			change_thread = true;
 			local_time = 0;
 		}
-		else if(cpu_idle) {
-			if(!list_of_threads[computed_deadline_order[deadline_being_ran + 1].thread_num].can_be_ran) {
-				cpu_idle = false;
-			}
-			printf("PRINT!!!!");
+
+		/* while the cpu is idling */
+		while(cpu_idle) {
+			sleep(1);
+			time_elapsed++;
+			local_time = 0;
+			tmp_max_seconds--;
+			printf("%02d\n", time_elapsed);
 		}
-		tmp_max_seconds--;
 	}
 	timer_finished = true;
-	pthread_exit(0);
+	pthread_exit(0);  // exit the thread when fully done
 }
 
 /**
@@ -117,11 +124,8 @@ void * timer() {
  * based on earliest deadline
  */
 void * scheduler() {
-	int i, j, distance;
-	int shortest_period;
-	int thread_deadlines_met[num_of_threads];
+	int i, j;
 	bool previous_thread_needs_ran = false;
-	bool just_idle = false;
 
 	printf("\nThread being executed : %d\n", thread_being_executed);
 
@@ -129,12 +133,13 @@ void * scheduler() {
 	while(!timer_finished) {
 		if(change_thread) {
 
-			/* look left of current thread being executed */
 			j = i;
+			/* look left of current thread being executed */
 			while(j > 0 && !previous_thread_needs_ran) {
 				if(!computed_deadline_order[j].is_done) {
-					previous_thread_needs_ran = true;
-					distance = i-j;
+					if(list_of_threads[computed_deadline_order[j].thread_num].can_be_ran) {
+						previous_thread_needs_ran = true;
+					}
 				}
 
 				if(!previous_thread_needs_ran) {
@@ -143,6 +148,7 @@ void * scheduler() {
 			}
 
 			int tmp = i;
+			/* if previous thread doesn't need ran -> look to the right */
 			if(!previous_thread_needs_ran) {
 				bool found = false;
 				while (i < total_number_deadlines && !found) {
@@ -152,17 +158,15 @@ void * scheduler() {
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
 						i++;
-
-						printf("first if");
 					}
 					/* checking if total time >= the next thread's previous deadline */
 					else if(list_of_threads[computed_deadline_order[i+1].thread_num].can_be_ran
 						&& !computed_deadline_order[i+1].is_done
 						&& list_of_threads[computed_deadline_order[i+1].thread_num].is_idling) {
+						
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
 						i++;
-						printf("DID YOU NOT MAKEIT HERE?!?!?!!?");
 					}
 					
 					if(!found) {
@@ -170,32 +174,35 @@ void * scheduler() {
 					}
 				}
 				
-
+				/* if something was found - run it */
 				if(found) {
-					printf("\nThread being executed : %d\n", thread_being_executed);
+					printf("Thread being executed : %d\n", thread_being_executed);
 					list_of_threads[thread_being_executed].is_idling = false;
 					deadline_being_ran = i;
 					found = false;
 					change_thread = false;
 				}
+				/* if nothing - then it is obviously CPU Idling */
 				else {
-					printf("NOTHING FOUND!!!!!");
+					printf("CPU Idling");
 					i = tmp;
 					cpu_idle = true;
 					change_thread = false;					
 				}
 			} 
+			/* previous found so run that */
 			else {
 				i = j;
 				thread_being_executed = computed_deadline_order[i].thread_num;
 				list_of_threads[thread_being_executed].is_idling = false;
-				printf("\nThread being executed : %d\n", thread_being_executed);
+				printf("Thread being executed : %d\n", thread_being_executed);
 				deadline_being_ran = i;
+				previous_thread_needs_ran = false;
 				change_thread = false;
 			}
 		}
 	}
-	pthread_exit(0);
+	pthread_exit(0);  // exit the thread when fully done
 }
 
 /**
@@ -210,6 +217,8 @@ void * runner(void * my_thread_info) {
 	sem_init(&sem_ready, 0, 1);
 	while(!timer_finished) {
 
+		/* if the cpu isn't idling then run the threads */
+		if(!cpu_idle) {
 			if(tmp_thread->deadlines_completed > 0) {
 				pthread_mutex_lock(&mutex_threads);
 				if(time_elapsed >= tmp_thread->deadline_list[tmp_thread->deadlines_completed - 1] && !tmp_thread->can_be_ran) {
@@ -217,18 +226,19 @@ void * runner(void * my_thread_info) {
 				}
 				pthread_mutex_unlock(&mutex_threads);
 			}
-			
-			if((tmp_thread->thread_ID == thread_being_executed) && (tmp_thread->can_be_ran) && (!tmp_thread->is_idling) && !cpu_idle) {
-
-				/* critical section : synchronizes threads with timer */ 
-				if(this_func_local_time < time_elapsed && !change_thread) {
-					sem_wait(&sem_ready);
-					printf("%02d aaaaaand its deadline time -> %02d\n", time_elapsed, tmp_thread->deadline_list[tmp_thread->deadlines_completed]);
-					sem_post(&sem_ready);
-					this_func_local_time = time_elapsed;
+		}
+		/* if cpu is idling have the other threads idle and have them check to see if they can be ran */
+		else {
+			if(tmp_thread->deadlines_completed > 0) {
+				sem_wait(&sem_ready);
+				if(time_elapsed >= tmp_thread->deadline_list[tmp_thread->deadlines_completed - 1] && !tmp_thread->can_be_ran) {
+					tmp_thread->can_be_ran = true;
+					cpu_idle = false;
+					change_thread = true;
 				}
-
+				sem_post(&sem_ready);
 			}
+		}
 	}
 
 	pthread_exit(0);
