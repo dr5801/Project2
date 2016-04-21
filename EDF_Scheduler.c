@@ -12,8 +12,6 @@ int main(int argc, char * argv[]) {
 
 	/* a user must input how many threads they desire */
 	if(argc == 2) {
-		
-
 		bool valid = check_num_threads( atoi(argv[1]) );
 		bool can_execute = false;
 
@@ -34,7 +32,6 @@ int main(int argc, char * argv[]) {
 			else
 				printf("\nThese threads can't be scheduled. Program will exit.");
 		}
-
 		
 		free_list();  // deconstruct the list
 	}
@@ -86,14 +83,12 @@ void * timer() {
 	int local_time = 0;
 	change_thread = false;
 	timer_finished = false;
-	int tmp_max_seconds = sec_to_run;
 
 	while(time_elapsed < (sec_to_run-2)) {
 
 		sleep(1);
 		time_elapsed++;
 		local_time++;
-		tmp_max_seconds--;
 		printf("%02d\n", time_elapsed);
 
 		/* change threads if local time = the current thread running's execution time */
@@ -111,7 +106,6 @@ void * timer() {
 			sleep(1);
 			time_elapsed++;
 			local_time = 0;
-			tmp_max_seconds--;
 			printf("%02d\n", time_elapsed);
 		}
 	}
@@ -120,8 +114,7 @@ void * timer() {
 }
 
 /**
- * Schedules which thread to run next 
- * based on earliest deadline
+ * Schedules which thread to run next
  */
 void * scheduler() {
 	int i, j;
@@ -134,7 +127,7 @@ void * scheduler() {
 		if(change_thread) {
 
 			j = i;
-			/* look left of current thread being executed */
+			/* look left of current thread being executed to make sure we didn't skip a thread*/
 			while(j > 0 && !previous_thread_needs_ran) {
 				if(!computed_deadline_order[j].is_done) {
 					if(list_of_threads[computed_deadline_order[j].thread_num].can_be_ran) {
@@ -154,7 +147,7 @@ void * scheduler() {
 				while (i < total_number_deadlines && !found) {
 					
 					if(list_of_threads[computed_deadline_order[i+1].thread_num].deadlines_completed == 0) {
-
+						
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
 						i++;

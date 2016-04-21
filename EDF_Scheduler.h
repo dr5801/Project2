@@ -23,11 +23,9 @@
 #define MAX_NUM_THREADS 10
 #endif // MAX_NUM_THREADS
 
-
 #ifndef MAX_PROG_LENGTH_SECONDS
 #define MAX_PROG_LENGTH_SECONDS 1000
 #endif  // MAX_PROG_LENGTH_SECONDS
-
 
 /*--------------- Contains all the info related to each thread ---------------*/
 typedef struct THREAD_INFO {
