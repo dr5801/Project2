@@ -1,6 +1,6 @@
 /**
  * Project 2   : CPU Scheduling
- * Programmers : Drew Rife & Alec Waddelow
+ * Programmers : Drew Rife
  * Course      : CMPE320
  * Section     : 2(11-12:50pm)
  * Instructor  : S. Lee
@@ -40,11 +40,11 @@ typedef struct THREAD_INFO {
 }THREAD_INFO;
 
 /*--------------- a sorted list of which deadlines to run next ---------------*/
-typedef struct DEADLINE_LINK_THREAD {
+typedef struct DEADLINE_LIST {
 	int thread_num;
 	bool is_done;
 	int deadline;
-}DEADLINE_LINK_THREAD;
+}DEADLINE_LIST;
 
 /*--------------- FUNCTIONS for threads and user input ---------------*/
 void * timer();								// keeps track of time
@@ -80,6 +80,6 @@ volatile static bool cpu_idle;
 
 /*--------------- List of threads and the struct array of what deadlines need ran next ---------------*/
 THREAD_INFO * list_of_threads;
-DEADLINE_LINK_THREAD * computed_deadline_order;
+DEADLINE_LIST * computed_deadline_order;
 
 #endif // EDF_SCHEDULER_H

@@ -1,6 +1,6 @@
 /**
  * Project 2   : CPU Scheduling
- * Programmers : Drew Rife & Alec Waddelow
+ * Programmers : Drew Rife
  * Course      : CMPE320
  * Section     : 2(11-12:50pm)
  * Instructor  : S. Lee
@@ -107,7 +107,7 @@ void request_execution_and_period_times() {
 
 	int k = 0;
 	/* fill the deadlines in the struct array of computed the computed deadlines for each thread */
-	computed_deadline_order = malloc(sizeof(DEADLINE_LINK_THREAD) * total_number_deadlines+1);
+	computed_deadline_order = malloc(sizeof(DEADLINE_LIST) * total_number_deadlines+1);
 	for(i = 0; i < num_of_threads; i++) {
 		int j;
 		int sum = 0;
@@ -133,7 +133,6 @@ void request_execution_and_period_times() {
 
 				computed_deadline_order[y].deadline = temp;
 				computed_deadline_order[y].thread_num = temp1;
-
 			}
 		}
 	}
@@ -160,7 +159,7 @@ bool threads_meet_deadlines() {
 }
 
 /**
- * free everything :)
+ * deconstructs the lists
  */
 void free_list() {
 	int i;

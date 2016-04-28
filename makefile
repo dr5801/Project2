@@ -8,7 +8,7 @@
 ##
 ################################################################
 CC = gcc
-CFLAGS = -g 
+CFLAGS = -g -Wall
 DEPS = EDF_Scheduler.h
 OBJ = EDF_Scheduler.o User_Input.o
 LIBS ?= -lpthread -lrt

@@ -1,6 +1,6 @@
 /**
  * Project 2   : CPU Scheduling
- * Programmers : Drew Rife & Alec Waddelow
+ * Programmers : Drew Rife
  * Course      : CMPE320
  * Section     : 2(11-12:50pm)
  * Instructor  : S. Lee
@@ -13,7 +13,6 @@ int main(int argc, char * argv[]) {
 	/* a user must input how many threads they desire */
 	if(argc == 2) {
 		bool valid = check_num_threads( atoi(argv[1]) );
-		bool can_execute = false;
 
 		/* check to see if the user entered in valid numbers */
 		if(valid) {
@@ -26,6 +25,7 @@ int main(int argc, char * argv[]) {
 				list_of_threads[thread_being_executed].is_idling = false;
 				deadline_being_ran = 0;
 				cpu_idle = false;
+
 				controller();
 				printf("killed\n");
 			}
@@ -58,7 +58,6 @@ void controller() {
 			/* create timer and scheduler thread */
 			pthread_create(&timer_thread, &attr, timer, NULL);
 			pthread_create(&scheduler_thread, &attr, scheduler, NULL);
-			// pthread_create(&checker_thread, &attr, scheduler, NULL);
 		}
 		pthread_create(&this_thread[i], &attr, runner, (void *)&list_of_threads[i]);
 	}
@@ -150,7 +149,6 @@ void * scheduler() {
 						
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
-						i++;
 					}
 					/* checking if total time >= the next thread's previous deadline */
 					else if(list_of_threads[computed_deadline_order[i+1].thread_num].can_be_ran
@@ -159,12 +157,9 @@ void * scheduler() {
 						
 						thread_being_executed = computed_deadline_order[i+1].thread_num;
 						found = true;
-						i++;
 					}
 					
-					if(!found) {
-						i++;
-					}
+					i++;
 				}
 				
 				/* if something was found - run it */
@@ -175,7 +170,7 @@ void * scheduler() {
 					found = false;
 					change_thread = false;
 				}
-				/* if nothing - then it is obviously CPU Idling */
+				/* if nothing can be ran then CPU Idling */
 				else {
 					printf("CPU is idling now\n");
 					i = tmp;
@@ -183,7 +178,7 @@ void * scheduler() {
 					change_thread = false;					
 				}
 			} 
-			/* previous found so run that */
+			/* a previous thread needs ran now that time_elapsed is now >= to that thread's last period time */
 			else {
 				i = j;
 				thread_being_executed = computed_deadline_order[i].thread_num;
@@ -199,18 +194,17 @@ void * scheduler() {
 }
 
 /**
- * Runs the main threads created : prints time (sec)
+ * Runs the main threads created
  * @param  my_thread_info
  */
 void * runner(void * my_thread_info) {
 	THREAD_INFO * tmp_thread = (THREAD_INFO *) my_thread_info;
-	static int this_func_local_time = 0;
 
 	pthread_mutex_init(&mutex_threads, NULL);
 	sem_init(&sem_ready, 0, 1);
 	while(!timer_finished) {
 
-		/* if the cpu isn't idling then run the threads */
+		/* if CPU isn't idling */
 		if(!cpu_idle) {
 			if(tmp_thread->deadlines_completed > 0) {
 				pthread_mutex_lock(&mutex_threads);
@@ -220,7 +214,7 @@ void * runner(void * my_thread_info) {
 				pthread_mutex_unlock(&mutex_threads);
 			}
 		}
-		/* if cpu is idling have the other threads idle and have them check to see if they can be ran */
+		/* cpu is idling */
 		else {
 			if(tmp_thread->deadlines_completed > 0) {
 				sem_wait(&sem_ready);
