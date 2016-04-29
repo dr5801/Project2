@@ -1,5 +1,5 @@
 Project : CPU Scheduling
-Programmers : Drew Rife and Alec Waddelow
+Programmers : Drew Rife
 Class : CMPE320
 Section : 2(11-12:50)
 Instructor : Dr. Lee
