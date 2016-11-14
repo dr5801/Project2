@@ -150,12 +150,7 @@ bool threads_meet_deadlines() {
 		sumnation += ((double)list_of_threads[i].execution_time/(double)list_of_threads[i].period_for_thread);
 	}
 
-	if(sumnation <= 1.0000)
-		can_execute = true;
-	else
-		can_execute = false;
-
-	return can_execute;
+	return (sumnation <= 1.0) ? true:false;
 }
 
 /**
