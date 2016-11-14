@@ -14,8 +14,9 @@
  * @return true or false
  */
 bool check_num_threads(int num_of_threads) {
-	if(num_of_threads >= 1 && num_of_threads <= MAX_NUM_THREADS)
+	if(num_of_threads >= 1 && num_of_threads <= MAX_NUM_THREADS) {
 		return true;
+	}
 	else if(num_of_threads < 1) {
 		printf("ERROR: You entered too few threads.  You need at least 1. TERMINATING...\n");
 		return false;
@@ -75,10 +76,12 @@ void request_execution_and_period_times() {
 
 	/* find the largest period of time */
 	for(i = 0; i < num_of_threads; i++) {
-		if(i == 0)
+		if(i == 0) {
 			largest_period_time = list_of_threads[i].period_for_thread;
-		else if(largest_period_time < list_of_threads[i].period_for_thread)
+		}
+		else if(largest_period_time < list_of_threads[i].period_for_thread) {
 			largest_period_time = list_of_threads[i].period_for_thread;
+		}
 	}
 
 	/* gets the input for how many seconds the user wants it to run */
@@ -87,10 +90,12 @@ void request_execution_and_period_times() {
 		printf("How long do you want to execute this program (sec) : ");
 		scanf("%d", &sec_to_run);
 
-		if(sec_to_run >= largest_period_time)
+		if(sec_to_run >= largest_period_time) {
 			acceptable_time = true;
-		else
+		}
+		else {
 			printf("\nError: Your time needs to be at least the largest period time (%d)!\n", largest_period_time);
+		}
 	}
 
 	/* fill in the deadline_list of the calculated deadlines for each thread */
